@@ -14,4 +14,5 @@ class RJyCProject(info: ProjectInfo) extends DefaultProject(info) with JythonPat
   override def mainResources = 
     super.mainResources +++
     mainJythonResources
+  var publishTo = Resolver.file("Local Maven repository", new java.io.File(Path.userHome+"/.m2/repository"))
 }
