@@ -2,6 +2,10 @@
 \usepackage[koi8-ru]{inputenc}
 \usepackage[english,russian]{babel}
 \usepackage{hyperref}
+\usepackage{listings}
+\lstset{language=Python,
+  breaklines=true,
+  breakatwhitespace=false}
 \author{Artyom Olshevskiy}
 \title{Jython-консоль вашего приложения}
 \begin{document}
@@ -89,6 +93,83 @@ Jython, потому как была опасность начать фиксить Twisted для Jython и
 торкать мышкой в консоль, но хотелось родной похожей на bash-среды.
 
 \section{Моя реализация}
-\subsection{Server}
-За пять минут выбрал 
+\subsection{Сервер}
+За пять минут выбрал XMLRPC в качестве интерфейса сервера. За
+следующих пять минут не передумал. За следующих 20 минут реализовал.
+
+Код сервера на Jython:
+\lstinputlisting{server.py}
+\subsection{Клиент}
+В качестве базового интерфейса был выбран Cmd, который из коробки поддерживает readline, что нам и нужно.
+
+Код сервера на этот раз на Python(похоже Cmd в Jython не поддерживает readline):
+\lstinputlisting{client.py}
+\subsection{Java-обёртка для сервера}
+Простой Bean для запуска нашего сервера. Проще просто некуда.
+\lstinputlisting{Server.java}
+\section{Использование}
+Предствьте себе гипотетический сервлет, который выводит список ссылок
+из своего поля.
+
+\lstinputlisting{Hello.java}
+
+Вот, что нам отвечает вебсервер:
+\begin{verbatim}
+siasia@host ~ % wget http://localhost:8080 -O - 2>/dev/null
+<a href="http://python.org">Python</a>
+<a href="http://java.net">Java</a>
+\end{verbatim}
+
+Теперь внедрим в него нашу консоль.
+
+\lstinputlisting{ConsoledHello.java}
+
+И подключимся к ней:
+\begin{verbatim}
+siasia@epbyminw2121 ~ % python client.py localhost 8081
+>>> this
+examples.Hello@13ebc5c
+>>> this.links
+{Python=http://python.org, Java=http://java.net}
+>>> this.links['Scala'] = 'http://scala-lang.org'
+>>> this.links
+{Scala=http://scala-lang.org, Python=http://python.org, Java=http://java.net}
+\end{verbatim}
+
+Проверим результат:
+\begin{verbatim}
+siasia@epbyminw2121 ~ % wget http://localhost:8080 -O - 2>/dev/null
+<a href="http://scala-lang.org">Scala</a>
+<a href="http://python.org">Python</a>
+<a href="http://java.net">Java</a>
+\end{verbatim}
+
+\section{Maven}
+\begin{enumerate}
+\item Добавьте репозиторий в свой pom.xml:
+\begin{verbatim}
+<repository>
+  <id>Rjyc Repository</id>
+  <url>http://siasia.github.com/maven2</url>
+</repository>
+\end{verbatim}
+\item Добавьте зависимость от rjyc:
+\begin{verbatim}
+<dependency>
+  <groupId>org.python</groupId>
+  <artifactId>rjyc</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+\end{verbatim}
+\item Импортируйте сервер в своём коде:
+\begin{verbatim}
+import net.rjyc.Server;
+\end{verbatim}
+\item Запустите его как описано выше.
+\item Скачайте клиент \url{http://github.com/siasia/rjyc/raw/master/client.py}.
+\item python client.py [host] [port]
+\item PROFIT!!!
+\end{enumerate}
+
+Форкайте меня на github \url{http://github.com/siasia}.
 \end{document}
