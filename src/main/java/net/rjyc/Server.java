@@ -15,10 +15,11 @@ public class Server {
     i = new PythonInterpreter();
     i.set("host", host);
     i.set("port", port);
-    i.set("ls", locals);
+    for(Map.Entry<String, Object> entry: locals.entrySet())
+      i.set(entry.getKey(), entry.getValue());
   }
   
   public void start() {    
-    i.exec("from rjyc import Server; Server(ls, (host, port), logRequests = False).serve_forever()");
+    i.exec("from rjyc import Server; Server(locals(), (host, port), logRequests = False).serve_forever()");
   }
 }

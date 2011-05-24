@@ -16,8 +16,8 @@ class Stdout(object):
         return len(bs)
 
 class InteractiveConsole(BaseInteractiveConsole):
-    def __init__(self, locals):
-        BaseInteractiveConsole.__init__(self, locals)
+    def __init__(self, ls):
+        BaseInteractiveConsole.__init__(self, ls)
         self.stdout = sys.stdout = sys.stderr = Stdout()
         self.completer = Completer(dict(self.locals))
     def push(self, line):
@@ -36,7 +36,7 @@ class InteractiveConsole(BaseInteractiveConsole):
         return comps
 
 class Server(SimpleXMLRPCServer):
-    def __init__(self, locals, *args, **kwargs):
+    def __init__(self, ls, *args, **kwargs):
         SimpleXMLRPCServer.__init__(self, *args, **kwargs)
         self.register_introspection_functions()
-        self.register_instance(InteractiveConsole(locals))
+        self.register_instance(InteractiveConsole(ls))
