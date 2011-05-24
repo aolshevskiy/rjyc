@@ -19,6 +19,6 @@ public class Server {
   }
   
   public void start() {    
-    i.exec("from rjyc import Server; Server(dict(ls), (host, port), logRequests = False).serve_forever()");
+    i.exec("from rjyc import Server; Server(ls, (host, port), logRequests = False).serve_forever()");
   }
 }

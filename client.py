@@ -1,5 +1,4 @@
 from cmd import Cmd as BaseCmd
-from code import InteractiveConsole as BaseInteractiveConsole
 import re, sys
 from xmlrpclib import ServerProxy
 
@@ -24,6 +23,39 @@ class Cmd(BaseCmd):
         (result, output) = self.s.push(line)
         self.prompt = ('... ' if result else '>>> ')
         sys.stdout.write(output)
+
+    def complete(self, text, state):
+        """Return the next possible completion for 'text'.
+
+        If a command has not been entered, then complete against command list.
+        Otherwise try to call complete_<command> to get list of completions.
+        """
+        if state == 0:
+            import readline
+            origline = readline.get_line_buffer()
+            line = origline.lstrip()
+            stripped = len(origline) - len(line)
+            begidx = readline.get_begidx() - stripped
+            endidx = readline.get_endidx() - stripped
+            if begidx>=0:
+                cmd, args, foo = self.parseline(line)
+                if cmd == '':
+                    compfunc = self.completedefault
+                else:
+                    try:
+                        compfunc = getattr(self, 'complete_' + cmd)
+                    except AttributeError:
+                        compfunc = self.completedefault
+            else:
+                compfunc = self.completenames
+            self.completion_matches = compfunc(text, line, begidx, endidx)
+        try:
+            return self.completion_matches[state]
+        except IndexError:
+            return None
+
+    def completedefault(self, text, *ignored):
+        return self.s.complete(text)
 
 if __name__ == '__main__':
     HOST, PORT = sys.argv[1:]
