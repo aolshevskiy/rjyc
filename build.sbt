@@ -9,13 +9,14 @@ resolvers := Seq("SakaiProject Repository" at "http://source.sakaiproject.org/ma
 pomIncludeRepository ~= { (filter) => { (repo) =>
 	(!repo.root.startsWith("http://scala")) && filter(repo)
 } }
-	
 
 libraryDependencies += "org.python" % "jython-complete" % "2.5.1"
 
 unmanagedResourceDirectories in Compile <<= (unmanagedResourceDirectories in Compile, sourceDirectory in Runtime) { (rds, sd) => rds :+ sd / "python" }
 
 crossPaths := false
+
+autoScalaLibrary := false
 
 publishMavenStyle := true
 
