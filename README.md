@@ -2,7 +2,7 @@
 
 This is a remote Python console allowing to manipulate your JVM application in runtime. 
 
-See [my article](http://devnest.blogspot.com/2010/10/jython.html) in Russian for more details.
+See [my article](http://habrahabr.ru/blogs/java/129064/) in Russian for more details.
 
 ## Maven Artifacts
 
